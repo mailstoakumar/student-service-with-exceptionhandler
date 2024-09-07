@@ -48,6 +48,12 @@ public class StudentController {
         return ResponseEntity.noContent().build();
     }
 
+    @PatchMapping("/{id}")
+    public ResponseEntity<Student> partiallyUpdateStudent(@PathVariable Long id, @RequestBody Map<String, Object> updates) {
+        Student updatedStudent = studentService.partiallyUpdateStudent(id, updates);
+        return ResponseEntity.ok(updatedStudent);
+    }
+
     @ExceptionHandler(MethodArgumentNotValidException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ResponseBody

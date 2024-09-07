@@ -7,7 +7,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.Map;
-import java.util.Optional;
 
 @Service
 public class StudentService {
@@ -41,5 +40,25 @@ public class StudentService {
             throw new StudentNotFoundException(id);
         }
         studentRepository.deleteById(id);
+    }
+
+    // Partially update a student by ID
+    public Student partiallyUpdateStudent(Long id, Map<String, Object> updates) {
+        Student student = getStudent(id);
+
+        updates.forEach((key, value) -> {
+            switch (key) {
+                case "name":
+                    student.setName((String) value);
+                    break;
+                case "age":
+                    student.setAge((Integer) value);
+                    break;
+                default:
+                    throw new RuntimeException("Invalid field: " + key);
+            }
+        });
+
+        return studentRepository.save(student);
     }
 }
