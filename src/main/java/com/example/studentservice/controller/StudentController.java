@@ -1,9 +1,13 @@
 package com.example.studentservice.controller;
 
+import com.example.studentservice.exception.ErrorResponse;
 import com.example.studentservice.model.Student;
 import com.example.studentservice.service.StudentService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
@@ -16,7 +20,7 @@ public class StudentController {
     private StudentService studentService;
 
     @PostMapping
-    public ResponseEntity<Student> addStudent(@RequestBody Student student) {
+    public ResponseEntity<Student> addStudent(@Valid @RequestBody Student student) {
         Student createdStudent = studentService.addStudent(student);
         return ResponseEntity.ok(createdStudent);
     }
@@ -42,5 +46,12 @@ public class StudentController {
     public ResponseEntity<Void> deleteStudent(@PathVariable Long id) {
         studentService.deleteStudent(id);
         return ResponseEntity.noContent().build();
+    }
+
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ResponseBody
+    private ErrorResponse handleMethodArgumentNotValidException(MethodArgumentNotValidException ex){
+        return new ErrorResponse(HttpStatus.BAD_REQUEST.value(), "An unexpected error occurred");
     }
 }
